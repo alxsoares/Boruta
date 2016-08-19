@@ -1,3 +1,5 @@
 Boruta.Rcheck
 *.tar.gz
 *.RD
+man
+NAMESPACE
