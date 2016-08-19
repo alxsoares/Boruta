@@ -2,19 +2,18 @@
 # Author: Miron B. Kursa, based on the idea & original code by Witold R. Rudnicki
 ###############################################################################
 
-##' @name Boruta
-##' @rdname Boruta
 ##' @export
 Boruta<-function(x,...)
  UseMethod("Boruta");
 
+##' Feature selection with the Boruta algorithm
+##'
+##' Boruta is an all relevant feature selection wrapper algorithm, capable of working with any classification method that output variable importance measure (VIM); by default, Boruta uses Random Forest.
+##' The method performs a top-down search for relevant features by comparing original attributes' importance with importance achievable at random, estimated using their permuted copies, and progressively elliminating irrelevant featurs to stabilise that test.
 ##' @rdname Boruta
-##' @title Important attribute search using Boruta algorithm
 ##' @method Boruta default
-##' @description Boruta is an all-relevant feature selection wrapper algorithm.
-##' It finds relevant features by comparing original attributes' importance with importance achievable at random, estimated using their permuted copies.
 ##' @param x data frame of predictors.
-##' @param y response vector; factor for classification, numeric vector for regression.
+##' @param y response vector; factor for classification, numeric vector for regression, \code{Surv} object for survival (supports depends on importance adapter capabilities).
 ##' @param getImp function used to obtain attribute importance.
 ##' The default is getImpRfZ, which runs random forest from the \code{ranger} package and gathers Z-scores of mean decrease accuracy measure.
 ##' It should return a numeric vector of a size identical to the number of columns of its first argument, containing importance measure of respective attributes.
@@ -251,9 +250,10 @@ Boruta.formula<-function(formula,data=.GlobalEnv,...){
  return(ans);
 }
 
+##' Print Boruta object
+##'
+##' Print method for the Boruta objects.
 ##' @method print Boruta
-##' @title Print Boruta object
-##' @description print method for Boruta objects.
 ##' @param x an object of a class Boruta.
 ##' @param ... additional arguments passed to \code{\link{print}}.
 ##' @return Invisible copy of \code{x}.

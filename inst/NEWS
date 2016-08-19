@@ -1,3 +1,11 @@
+Changes in 5.x:
+       - Documentation fix. (Thanks to Andrew Slack-Smith for spotting
+       the problem)
+       - ranger VIM providers fixed to support survival problems. (Thanks
+       to James Iremonger for spotting this)
+       - Various documentation updates.
+
+
 Changes in 5.0:
        - ranger RF implementaion replaced randomForest in default
        importance providers, bringing speed and parallel processing
