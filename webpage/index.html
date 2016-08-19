@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html><head><title>Boruta</title><meta http-equiv="Content-Type" content="text/html;charset=utf-8"><link href='https://fonts.googleapis.com/css?family=Lato:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'/><link rel='icon' href='favicon.png'/><link rel='shortcut icon' href='favicon.png'/>
+<style>
+body{margin:0;padding:0;font-family:'Lato';margin-top:5%;}
+a:link{color:green;}
+a:hover{color:lime;}
+a:visited{color:green;}
+div.headwrap{background-image:url('logo.svg');background-position:center right;background-repeat:no-repeat;background-size:contain;margin-right:10%;margin-left:15%;}
+div.headtxt{top:150px;width:40%;text-align:right;}
+div.about{background:rgba(255,255,255,0.7);max-width:25em;text-align:justify;}
+h1{color:black;text-shadow:white 0 0 0.1em,white 0 0 0.1em,white 0 0 0.1em;font-size:200px;margin-top:0;margin-bottom:0;}
+li{display:block;}
+ul{max-width:50em;margin:auto;margin-bottom:5em;padding:5px;}
+li:nth-child(2n){margin-right:auto;margin-left:20%;}
+li:nth-child(2n+1){margin-right:20%;margin-left:auto;}
+div.q{margin-top:2em;margin-left:2em;margin-bottom:0.2em;font-size:140%;font-style:italic;}
+div.a{text-align:justify;}
+span.code{font-family:monospace;}
+</style>
+</head><body><div class="headwrap">
+  <div class="headtxt"><h1>Boruta</h1></div>
+  <div class="about">
+    <p class="desc">Boruta is an all-relevant wrapper feature selection method, conceived by <a href="http://www.icm.edu.pl/~rudnicki/">Witold R. Rudnicki</a> and developed by <a href="https://mbq.me">Miron B. Kursa</a> at the <a href="http://icm.edu.pl">ICM UW</a>.</p>
+    <p><a href="http://cran.r-project.org/web/packages/Boruta/index.html">Reference implementation as an R package</a><br/><a href="https://github.com/danielhomola/boruta_py">Python implementation by Daniel Homola</a><br/><a href="http://www.jstatsoft.org/v36/i11/">Paper describing the method</a><br/><a href="https://scholar.google.com/scholar?cites=13748968550215677895">Usage, as seen by Google Scholar</a></p>
+  </div>
+</div>
+<ul class="qa">
+ <li>
+ <div class="q">So, what's so special about Boruta?</div>
+ <div class="a">It is an all relevant feature selection method, while most other are minimal optimal; this means it tries to find all features carrying information usable for prediction, rather than finding a possibly compact subset of features on which some classifier has a minimal error. <a href="http://jmlr.csail.mit.edu/papers/volume8/nilsson07a/nilsson07a.pdf">Here is a paper with the details</a>.</div>
+ </li>
+
+ <li>
+ <div class="q">Why should I care?</div>
+ <div class="a">For a start, when you try to understand the phenomenon that made your data, you should care about all factors that contribute to it, not just the bluntest signs of it in context of your methodology (yes, minimal optimal set of features by definition depends on your classifier choice).</div>
+ </li>
+
+ <li>
+ <div class="q">But I only care about good classification accuracy!</div>
+ <div class="a">So you also care about having a robust model; in p≫n problems, one can usually cherry-pick a nonsense subset of features which yields good or even perfect classification – minimal optimal methods can easily get deceived by that, leaving you with an overfitted model and no sign that something is wrong. See <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC124442/pdf/pq1002006562.pdf">this</a> or <a href="http://link.springer.com/chapter/10.1007/978-3-642-23169-8_16">that</a> for an example.</div>
+ </li>
+
+ <li>
+ <div class="q">I want top-N best features, but this junk is only giving me M confirmed and K tentative, whatever that means?!</div>
+ <div class="a">This does not work this way; Boruta is a feature selection method, not a feature ranking method. This way it is actually better, because selection is what you always need at the end of the day, and Boruta solves the problem of reasonable N in your top-N for you.</div>
+ </li>
+
+ <li>
+ <div class="q">How is Boruta better than my favourite mutual-information / casual supercorrelation-based / dependency testing method? It is all relevant as well!</div>
+ <div class="a">Sure; probably Boruta has a higher chance of taking into account multi-feature associations, without a computational and statistical-significance crunching impact of exhaustive searching for them. But it is not guaranteed to.</div>
+ </li>
+
+ <li>
+ <div class="q">Is Boruta a silver bullet for all my feature selection needs?</div>
+ <div class="a">No, obviously; all relevant problem requires practically infinite number of objects / samples to be solved exactly, Boruta is only a humble, heuristic approximation. With a limited sample, some truly irrelevant feature may always become indistinguishable from a truly relevant ones by pure chance. Remember about proper testing, and that nothing is more effective than getting more, better quality data.</div>
+ </li>
+
+ <li>
+ <div class="q">What are tentative features?</div>
+ <div class="a">Those for which Boruta could not justify whether they are relevant or not. You can treat them as confirmed or rejected depending on the use case; also increasing the number of iterations help to reduce their number. In case you desperately want to get rid of them, R version has <span class="code">Boruta::TentativeRoughFix</span> function which applies pretty naive heuristic to re-classify them into confirmed and rejected based on how they scored during the Boruta run.</div>
+ </li>
+
+ <li>
+ <div class="q">You say that accuracy of a model made on a selection of features is not a good indicator of its quality… How shall I assess feature selection then?</div>
+ <div class="a">Great question! I like to use the self-consistency of the selection, i.e. analysis how often certain attributes are selected over many applications of a tested FS method on a somehow disturbed version of the training data, for instance bootstrapped (see <a href="http://www.biomedcentral.com/1471-2105/15/8/">this</a> for an example).<br> Passing this test won't guarantee that the method is good, but failing it certainly shows that it is bad. The best option is obviously to compare with some gold side knowledge, but it may be hard or impossible to acquire or tricky to assess. If you really need to use classification accuracy, do a nested cross-validation.</div>
+ </li>
+
+ <li>
+ <div class="q">So, how does it work? Is magic involved?</div>
+ <div class="a">It is actually pretty trivial, no magic at all. The core idea is that a feature that is not relevant is not more useful for classification than its version with a permuted order of values. To this end, Boruta extends the given dataset with such permuted copies of all features (which we call <i>shadows</i>), applies some feature importance measure (aka VIM; Boruta can use any, the default is Random Forest's MDA) and checks which features are better and which are worse than a most important shadow.<br>The next important idea is based on observation that VIMs get more accurate with less irrelevant features present; thus, Boruta applies the above test iteratively, constantly removing features which it strongly believes are irrelevant. The details are <a href="http://www.jstatsoft.org/v36/i11/">here</a>.</div>
+ </li>
+
+ <li>
+ <div class="q">Boruta is wrong!</div>
+ <div class="a">Sad to hear that; but before moving to a different method, you may want to check whether the VIM you are using is stable, as it is a popular error. For instance, in the default state, R Boruta uses RF MDA importance with the <span class="code">ranger</span>'s default number of trees equal to 500 — this is a very small number, suitable only for datasets with a few features.<br>
+ In case you are doing a benchmark by adding lots of noisy features to some dataset or just happen to have a p≫n problem, note that false positives are expected and inevitable due to how likely it is to generate random associations in such a set-up.<br>
+ You may also want to check if you are describing your problem with features that have a potential to be relevant and are adjusted to the characteristics of your VIM source. Be sure that you don't have spoiler features which may uniquely index your objects, like timestamps or IDs.
+ </div>
+ </li>
+
+ <li>
+ <div class="q">Boruta is slow!</div>
+ <div class="a">Well, it is certainly not as fast as a simple correlation or a single VIM run, but remember that it is trying to solve a tough problem. However, ensure that you are not using the formula interface and that you have enough RAM. You may also wish to turn off model saving in your VIM (which is already done in Boruta's default VIM provider wrappers) and Boruta VIM history (<span class="code">holdHistory=FALSE</span>). Finally, you can try to use a faster VIM source, like for instance <a href="http://cran.r-project.org/web/packages/rFerns/index.html">rFerns</a> (also <a href="http://www.biomedcentral.com/1471-2105/15/8/">this</a>), and/or a VIM that allows parallel computation (both <a href="http://cran.r-project.org/web/packages/Boruta/index.html">R Boruta</a>, since version 5.0, and <a href="https://bitbucket.org/danielhomola/boruta_py/">Python Boruta</a> by default use Random Forest MDA VIM provided by an RF implementation which can easily utilise multiple local cores; respectively <a href="http://cran.r-project.org/web/packages/ranger/index.html">ranger</a> and <a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html">scikit-learn</a>). Note that it makes no sense to make a parallel version of Boruta on its own; it is strictly single-threaded and it won't change.<br>
+ You may want to track Boruta progress live; in case of R version you can achieve this by setting <span class="code">doTrace</span> argument set to 1 or 2 (on Windows, you also have to turn off output buffering).
+ </div>
+ </li>
+
+ <li>
+ <div class="q">What is the difference between attribute, feature and variable?</div>
+ <div class="a">For the sake of this page as well as Boruta strings and docs, none.</div>
+ </li>
+
+ <li>
+ <div class="q">Why such a strange name?</div>
+ <div class="a">Boruta is a <a href="http://en.wikipedia.org/wiki/Leshy">Slavic spirit of the forest</a>, and the first version of Boruta was a wrapper over the Random Forest method.</div>
+ </li>
+
+ <li>
+ <div class="q">I have found a bug!</div>
+ <div class="a">Cool, please report it so it could be fixed.</div>
+ </li>
+</div>
+</body></html>
+<!--Where, oh where is the question mark-->
