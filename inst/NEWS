@@ -1,4 +1,7 @@
 Changes in 5.2:
+       - New status messages, including proper grammar and a count of
+       still undecided attributes. (Thanks to Aristide Mooyaart for
+       suggesting this)
 
 Changes in 5.1:
        - Documentation fix. (Thanks to Andrew Slack-Smith for spotting
