@@ -3,6 +3,7 @@
 ###############################################################################
 
 ##' @export
+##' @rdname Boruta
 Boruta<-function(x,...)
  UseMethod("Boruta");
 
@@ -168,17 +169,30 @@ Boruta.default<-function(x,y,pValue=0.01,mcAdj=TRUE,maxRuns=100,doTrace=0,holdHi
   toReject<-stats::p.adjust(stats::pbinom(hitReg,runs,0.5,lower.tail=TRUE),method=pAdjMethod)<pValue;
   (decReg=="Tentative" & toReject)->toReject;
 
-  #Trace the result
-  nAcc<-sum(toAccept);
-  if(doTrace>0 & nAcc>0)
-   message(sprintf("Confirmed %s attributes: %s",nAcc,.attListPrettyPrint(attNames[toAccept])));
-
-  nRej<-sum(toReject);
-  if(doTrace>0 & nRej>0)
-   message(sprintf("Rejected %s attributes: %s",nRej,.attListPrettyPrint(attNames[toReject])));
-
-  #Updating decReg
+  #Update decReg
   decReg[toAccept]<-"Confirmed";"Rejected"->decReg[toReject];
+
+  #Report progress
+  if(doTrace>0){
+   nAcc<-sum(toAccept);
+   nRej<-sum(toReject);
+   nLeft<-sum(decReg=="Tentative");
+   if(nAcc+nRej>0)
+    message(sprintf("After %s iterations, +%s: ",runs,format(difftime(Sys.time(),timeStart),digits=2)));
+   if(nAcc>0)
+    message(sprintf(" confirmed %s attribute%s: %s",
+     nAcc,ifelse(nAcc==1,'','s'),.attListPrettyPrint(attNames[toAccept])));
+   if(nRej>0)
+    message(sprintf(" rejected %s attribute%s: %s",
+     nRej,ifelse(nRej==1,'','s'),.attListPrettyPrint(attNames[toReject])));
+   if(nAcc+nRej>0)
+    if(nLeft>0){
+     message(sprintf(" still have %s attribute%s left.\n",
+      nLeft,ifelse(nLeft==1,'','s')));
+    }else{
+     if(nAcc+nRej>0) message(" no more attributes left.\n");
+    }
+  }
   return(decReg);
  }
 
@@ -224,8 +238,8 @@ Boruta.default<-function(x,y,pValue=0.01,mcAdj=TRUE,maxRuns=100,doTrace=0,holdHi
 .attListPrettyPrint<-function(x,limit=5){
  x<-sort(x);
  if(length(x)<limit+1)
-  return(sprintf("%s.",paste(x,collapse=", ")));
- sprintf("%s and %s more.",paste(utils::head(x,limit),collapse=", "),length(x)-limit);
+  return(sprintf("%s;",paste(x,collapse=", ")));
+ sprintf("%s and %s more;",paste(utils::head(x,limit),collapse=", "),length(x)-limit);
 }
 
 ##' @rdname Boruta

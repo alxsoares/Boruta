@@ -15,7 +15,7 @@ getSelectedAttributes(x, withTentative = FALSE)
 A character vector with names of the relevant attributes.
 }
 \description{
-Extract names of the selected attributes
+\code{getSelectedAttributes} returns a vector of names of attributes selected during a Boruta run.
 }
 \examples{
 \dontrun{

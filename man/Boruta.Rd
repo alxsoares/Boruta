@@ -18,7 +18,7 @@ Boruta(x, ...)
 
 \item{...}{additional parameters passed to \code{getImp}.}
 
-\item{y}{response vector; factor for classification, numeric vector for regression.}
+\item{y}{response vector; factor for classification, numeric vector for regression, \code{Surv} object for survival (supports depends on importance adapter capabilities).}
 
 \item{pValue}{confidence level. Default value should be used.}
 

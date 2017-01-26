@@ -88,7 +88,7 @@ getSelectedAttributes<-function(x,withTentative=FALSE){
 ##' @author Miron B. Kursa
 ##' @export
 TentativeRoughFix<-function(x,averageOver=Inf){
- if(class(x)!='Boruta')
+ if(!inherits(x,'Boruta'))
   stop('This function needs Boruta object as an argument.');
  if(is.null(x$ImpHistory))
   stop('Importance history was not stored during the Boruta run.');
@@ -236,4 +236,37 @@ plotImpHistory<-function(x,colCode=c('green','yellow','red','blue'),col=NULL,typ
  #Final plotting
  graphics::matplot(0:(nrow(x$ImpHistory)-1),x$ImpHistory,xlab=xlab,ylab=ylab,col=col,type=type,lty=lty,pch=pch,...);
  invisible(x);
+}
+
+### Formulae ###
+
+##' Export Boruta result as a formula
+##'
+##' Functions which convert the Boruta selection into a formula, so that it could be passed further to other functions.
+##' @param x an object of a class Boruta, made using a formula interface.
+##' @return Formula, corresponding to the Boruta results.
+##' \code{getConfirmedFormula} returns only Confirmed attributes, \code{getNonRejectedFormula} also adds Tentative ones.
+##' @note This operation is possible only when Boruta selection was invoked using a formula interface.
+##' @rdname getFormulae
+##' @export
+getConfirmedFormula<-function(x){
+	if(!inherits(x,'Boruta'))
+	 stop('This function needs Boruta object as an argument.');
+	if(is.null(x$call[["formula"]]))
+	 stop('The model for this Boruta run was not a formula.');
+	deparse(x$call[["formula"]][[2]])->dec;
+	preds<-paste(names(x$finalDecision)[x$finalDecision=='Confirmed'],collapse="+");
+	return(stats::as.formula(sprintf('%s~%s',dec,preds)));
+}
+
+##' @rdname getFormulae
+##' @export
+getNonRejectedFormula<-function(x){
+	if(!inherits(x,'Boruta'))
+	 stop('This function needs Boruta object as an argument.');
+	if(is.null(x$call[["formula"]]))
+	 stop('The model for this Boruta run was not a formula.');
+	deparse(x$call[["formula"]][[2]])->dec;
+	preds<-paste(names(x$finalDecision)[x$finalDecision!='Rejected'],collapse="+");
+	return(stats::as.formula(sprintf('%s~%s',dec,preds)));
 }
