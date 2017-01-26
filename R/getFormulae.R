@@ -19,7 +19,7 @@ getConfirmedFormula<-function(x){
 	 stop('The model for this Boruta run was not a formula.');
 	deparse(x$call[["formula"]][[2]])->dec;
 	preds<-paste(names(x$finalDecision)[x$finalDecision=='Confirmed'],collapse="+");
-	return(as.formula(sprintf('%s~%s',dec,preds)));
+	return(stats::as.formula(sprintf('%s~%s',dec,preds)));
 }
 
 ##' @rdname getFormulae
@@ -31,5 +31,5 @@ getNonRejectedFormula<-function(x){
 	 stop('The model for this Boruta run was not a formula.');
 	deparse(x$call[["formula"]][[2]])->dec;
 	preds<-paste(names(x$finalDecision)[x$finalDecision!='Rejected'],collapse="+");
-	return(as.formula(sprintf('%s~%s',dec,preds)));
+	return(stats::as.formula(sprintf('%s~%s',dec,preds)));
 }
