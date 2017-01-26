@@ -1,4 +1,7 @@
 Changes in 5.2:
+       - Boruta to formula conversion functions (getConfirmedFormula,
+       getNonRejectedFormula) are back, after a silent disappearance
+       in the TODO version. (Thanks to Marco Niemann)
 
 Changes in 5.1:
        - Documentation fix. (Thanks to Andrew Slack-Smith for spotting
