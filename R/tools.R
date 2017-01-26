@@ -88,7 +88,7 @@ getSelectedAttributes<-function(x,withTentative=FALSE){
 ##' @author Miron B. Kursa
 ##' @export
 TentativeRoughFix<-function(x,averageOver=Inf){
- if(class(x)!='Boruta')
+ if(!inherits(x,'Boruta'))
   stop('This function needs Boruta object as an argument.');
  if(is.null(x$ImpHistory))
   stop('Importance history was not stored during the Boruta run.');
