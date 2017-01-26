@@ -1,4 +1,7 @@
 Changes in 5.2:
+       - New status messages, including proper grammar and a count of
+       still undecided attributes. (Thanks to Aristide Mooyaart for
+       suggesting this)
        - Boruta to formula conversion functions (getConfirmedFormula,
        getNonRejectedFormula) are back, after a silent disappearance
        in the 2.0 version. (Thanks to Marco Niemann)
